@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# in the en_US.UTF-8 locale special chars get ignored by sort, and other locales
+# may have other rules so we need to set an explicit locale
+export LC_ALL=C
+
+IFS=$'\n'
+
+dir="${1}"
+if [[ -z "${dir}" ]]; then
+    dir="."
+fi
+
+sort_opts=(-k2n -k1r)
+if [[ -n "${2}" ]]; then
+    if [[ "${2}" == "age" ]]; then
+        sort_opts=(-k3nr -k1r)
+    fi
+fi
+
+traverse() {
+    dir="${1}"
+    for file in $(find "${dir}" -type f); do
+        echo "${file} $(stat -c '%s %X' "${file}")"
+    done 
+}
+
+for file in $(traverse "${dir}" | sort "${sort_opts[@]}"); do
+    name=$(awk '{ $(NF-1)=""; $(NF)=""; print }' <<< "${file}")
+    name="${name::-2}"
+
+    size=$(awk '{ print $(NF-1)}' <<< "${file}")
+    size=$(numfmt --to=iec-i --format=%.1f --round=nearest "${size}" \
+        | sed 's/\([a-zA-Z]*\)$/ \1B/g')
+
+    access=$(awk '{ print $(NF)}' <<< "${file}")
+    access=$(date --date="@${access}" +'%b %d %Y')
+
+    printf "%10s | %11s | %s\n" "${size}" "${access}" "${name}"
+done
