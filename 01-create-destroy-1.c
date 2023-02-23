@@ -15,7 +15,7 @@
 
 #include "elist.h"
 
-test_start("Tests creating and destroying lists. Note that these tests depend on size() and capacity() being implemented.");
+test_start("Tests creating and destroying lists.");
 
 subtest("Creating and destroying lists",
 {
@@ -24,6 +24,10 @@ subtest("Creating and destroying lists",
     elist_destroy(list);
 
     list = elist_create(999, sizeof(int) * 100);
+    test_assert(list != NULL);
+    elist_destroy(list);
+
+    list = elist_create(10000, sizeof(double));
     test_assert(list != NULL);
     elist_destroy(list);
 });
