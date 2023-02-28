@@ -42,7 +42,7 @@ subtest("Locating elements from a test array",
         7
     };
 
-    struct elist *list = elist_create(20);
+    struct elist *list = elist_create(20, sizeof(int));
     for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
         elist_add(list, &data[i]);
     }

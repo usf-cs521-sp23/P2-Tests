@@ -34,7 +34,7 @@ test_start("Tests the set_capacity function");
 
 subtest("",
 
-    struct elist *list = elist_create(1);
+    struct elist *list = elist_create(1, sizeof(int));
     elist_set_capacity(list, 1000000);
     for (int i = 0; i < 1000000; ++i) {
         int *data = malloc(sizeof(int));

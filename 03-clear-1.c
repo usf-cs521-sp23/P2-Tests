@@ -24,14 +24,12 @@ test_start("Ensures clear() works correctly by checking the list size and access
 
 subtest("clear",
 {
-    struct elist *list = elist_create(100);
+    struct elist *list = elist_create(100, sizeof(int));
     test_assert(list != NULL);
 
     int i;
     for (i = 1; i <= 100; ++i) {
-        int *data = malloc(sizeof(int));
-        *data = i;
-        elist_add(list, data);
+        elist_add(list, &i);
     }
 
     size_t size = elist_size(list);
@@ -57,19 +55,30 @@ subtest("clear",
     result = elist_get(list, 0);
     test_assert(result != NULL);
 
+    /* Find the location of the first int and then access
+     * the rest of the memory locations */
+    int total = 0;
+    int *elements = (int *) elist_get(list, 0);
+    for (int j = 0; j < 100; ++j) {
+        total += elements[j];
+    }
+
+    test_assert(total == 5091);
+    test_printf("%d", total);
+    printf("\nTotal should be 5091 because elements were not erased\n");
+    printf("(only size of list changed)\n");
+
     elist_destroy(list);
 });
 
 subtest("clear_mem",
 {
-    struct elist *list = elist_create(1000);
+    struct elist *list = elist_create(1000, sizeof(int));
     test_assert(list != NULL);
 
     int i;
     for (i = 1; i <= 1000; ++i) {
-        int *data = malloc(sizeof(int));
-        *data = i;
-        elist_add(list, data);
+        elist_add(list, &i);
     }
 
     size_t size = elist_size(list);
@@ -80,9 +89,7 @@ subtest("clear_mem",
     size = elist_size(list);
     test_assert(size == 0);
 
-    int *data2 = malloc(sizeof(int));
-    *data2 = i;
-    elist_add(list, data2);
+    elist_add(list, &i);
     size = elist_size(list);
     test_assert(size == 1);
 
@@ -98,16 +105,16 @@ subtest("clear_mem",
     /* Find the location of the first int and then access
      * the rest of the memory locations */
     int total = 0;
-    void **elements = list->element_storage;
+    int *elements = (int *) elist_get(list, 0);
     for (int j = 0; j < 1000; ++j) {
-        int *element = elements[j];
-        if (element != NULL) {
-            total += *element;
-        }
+        total += elements[j];
     }
 
     test_assert(total == 1001);
     test_printf("%d", total);
+
+    printf("\nTotal should be 1001 because elements were zeroed out\n");
+    printf("(1001 was inserted after clear_mem)");
 
     elist_destroy(list);
 });

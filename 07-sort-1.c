@@ -14,15 +14,13 @@
 
 #include "elist.h"
 
+    
 int comparator(const void *a, const void *b)
 {
-    /* The element storage in our list is an array of void pointers, or in other
-     * words, a void **. The first pointer is the location within the element
-     * storage, and the second pointer (2nd deref) is the pointer to the actual
-     * data. */
-    const int **ai = (const int **) a;
-    const int **bi = (const int **) b;
-    return **ai > **bi;
+    int *ai = (int *) a;
+    int *bi = (int *) b;
+
+    return *ai > *bi;
 }
 
 test_start("Tests the sort function");
@@ -66,7 +64,7 @@ subtest("Creates a list, sorts it, and verifies the output",
         370281,
     };
 
-    struct elist *list = elist_create(20);
+    struct elist *list = elist_create(20, sizeof(int));
     for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
         elist_add(list, &data[i]);
     }
