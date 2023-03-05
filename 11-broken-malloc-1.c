@@ -28,7 +28,7 @@ test_start("Tests functions when malloc()/calloc() is broken");
 
 subtest("elist_create",
 {
-    struct elist *list = elist_create(55);
+    struct elist *list = elist_create(55, 125);
     test_assert(list == NULL);
 });
 
