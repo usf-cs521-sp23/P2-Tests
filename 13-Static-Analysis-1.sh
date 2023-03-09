@@ -15,4 +15,7 @@ cppcheck --enable=warning,performance \
 
 cc -Wall -Werror -lm "${TEST_DIR}"/../{elist.c,da.c,util.c} || test_end 1
 
+# Finally, if README.md is not filled out (still has TODOs), this test fails.
+grep 'TODO' "${TEST_DIR}/../README.md" && test_end 1
+
 test_end
